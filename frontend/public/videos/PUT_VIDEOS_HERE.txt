@@ -1,0 +1,1 @@
+MP4 videolarni shu papkaga joyla. Nomlarini src/data/topics.js dagi video qiymatiga mosla.

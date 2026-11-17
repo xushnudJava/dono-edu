@@ -1,0 +1,1 @@
+import a from './sonli-ifoda.js';import b from './harfli-ifoda.js';import c from './tenglama-1.js';import d from './tenglama-2.js';import e from './tengsizlik-1.js';import f from './tengsizlik-2.js';export default {'sonli-ifoda':a,'harfli-ifoda':b,'tenglama-1':c,'tenglama-2':d,'tengsizlik-1':e,'tengsizlik-2':f};
