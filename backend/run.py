@@ -25,7 +25,18 @@ def create_app():
     app=Flask(__name__); app.config.from_object(Config)
     db.init_app(app); jwt.init_app(app)
     CORS(app,resources={r"/api/*":{"origins":app.config["FRONTEND_ORIGIN"]}})
-    with app.app_context(): db.create_all()
+    with app.app_context():db.create_all()
+
+    admin = User.query.filter_by(first="admin", last="admin").first()
+
+    if not admin:
+        admin = User(
+            first="admin",
+            last="admin",
+            password=generate_password_hash("123456")
+        )
+        db.session.add(admin)
+        db.session.commit()
     @app.get("/api/health")
     def health(): return {"ok":True}
     @app.post("/api/auth/<mode>")
