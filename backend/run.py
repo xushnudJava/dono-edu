@@ -30,13 +30,13 @@ def create_app():
     admin = User.query.filter_by(first="admin", last="admin").first()
 
     if not admin:
-        admin = User(
-            first="admin",
-            last="admin",
-            password=generate_password_hash("123456")
-        )
-        db.session.add(admin)
-        db.session.commit()
+            admin = User(
+                first="admin",
+                last="admin",
+                password=generate_password_hash("123456")
+            )
+            db.session.add(admin)
+            db.session.commit()
     @app.get("/api/health")
     def health(): return {"ok":True}
     @app.post("/api/auth/<mode>")
