@@ -73,6 +73,10 @@ export default function App() {
     const [miniBest, setMiniBest] = useState(
         () => Number(localStorage.getItem('dono-mini-best') || 0)
     );
+    // Admin Dashboard
+    const [adminStudents, setAdminStudents] = useState([]);
+    const [adminLoading, setAdminLoading] = useState(false);
+    const [adminError, setAdminError] = useState('');
 
     const token = localStorage.getItem('dono-token');
 
@@ -359,6 +363,22 @@ export default function App() {
         }, 800);
     }
 
+
+    async function openAdminPanel() {
+        setAdminLoading(true);
+        setAdminError('');
+        setPage('admin');
+
+        try {
+            const data = await call('/admin/students');
+            setAdminStudents(data.students || []);
+        } catch (error) {
+            setAdminError(error.message);
+        } finally {
+            setAdminLoading(false);
+        }
+    }
+
     function controlAnswer(optionIndex) {
         if (ca[ci] !== undefined || !ct[ci]) return;
 
@@ -511,12 +531,130 @@ export default function App() {
                     {user.firstName} {user.lastName}
                 </div>
 
+                {user.firstName === 'admin' && user.lastName === 'admin' && (
+                    <button className="nav-button" onClick={openAdminPanel}>
+                        👨‍💼 Admin panel
+                    </button>
+                )}
+
                 <button className="nav-button" onClick={logout}>
                     Chiqish
                 </button>
             </header>
 
             <main>
+
+                {page === 'admin' && (
+                    <section className="admin-dashboard">
+                        <button
+                            className="back-button"
+                            onClick={() => setPage('home')}
+                        >
+                            ← Bosh sahifa
+                        </button>
+
+                        <div className="admin-heading">
+                            <div className="section-kicker">DONO EDU · BOSHQARUV</div>
+                            <h1>O‘quvchilar holati</h1>
+                            <p>Barcha o‘quvchilarning o‘zlashtirish natijalari.</p>
+                        </div>
+
+                        {adminLoading && <p>Ma’lumotlar yuklanmoqda...</p>}
+
+                        {adminError && (
+                            <p className="error-message">{adminError}</p>
+                        )}
+
+                        {!adminLoading && !adminError && (
+                            <>
+                                <div className="admin-total">
+                                    <span>Jami o‘quvchilar</span>
+                                    <strong>{adminStudents.length}</strong>
+                                </div>
+
+                                <div className="admin-students">
+                                    {adminStudents.length === 0 ? (
+                                        <p>Hozircha o‘quvchilar mavjud emas.</p>
+                                    ) : (
+                                        adminStudents.map(student => {
+                                            const studentProgress = student.progress || {};
+
+                                            const completed = topics.filter(item =>
+                                                studentProgress[item.id]?.wordwallDone
+                                            ).length;
+
+                                            return (
+                                                <article
+                                                    className="admin-student-card"
+                                                    key={student.id}
+                                                >
+                                                    <div className="admin-student-header">
+                                                        <div>
+                                                            <h3>
+                                                                {student.firstName} {student.lastName}
+                                                            </h3>
+                                                            <span>O‘quvchi ID: {student.id}</span>
+                                                        </div>
+
+                                                        <div className="admin-completed">
+                                                            {completed}/{topics.length} mavzu
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="admin-topic-list">
+                                                        {topics.map(item => {
+                                                            const p = studentProgress[item.id] || {};
+
+                                                            const started = Boolean(
+                                                                p.videoDone ||
+                                                                p.easyDone ||
+                                                                p.mediumDone ||
+                                                                p.hardDone
+                                                            );
+
+                                                            const done = Boolean(p.wordwallDone);
+
+                                                            return (
+                                                                <div
+                                                                    className="admin-topic-row"
+                                                                    key={item.id}
+                                                                >
+                                                                    <div className="admin-topic-name">
+                                                                        <strong>{item.title}</strong>
+                                                                        <span>
+                                                                            {done
+                                                                                ? '✓ Yakunlangan'
+                                                                                : started
+                                                                                    ? 'Jarayonda'
+                                                                                    : 'Boshlanmagan'}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div className="admin-levels">
+                                                                        <span>
+                                                                            Oson: {p.easyScore ?? 0}%
+                                                                        </span>
+                                                                        <span>
+                                                                            O‘rta: {p.mediumScore ?? 0}%
+                                                                        </span>
+                                                                        <span>
+                                                                            Qiyin: {p.hardScore ?? 0}%
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                </article>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </section>
+                )}
+
                 {page === 'home' && (
                     <>
                         <section className="hero">

@@ -69,6 +69,41 @@ def create_app():
         if not row: row=Progress(user_id=uid,topic=topic,data={}); db.session.add(row)
         row.data={**(row.data or {}),**(request.get_json() or {})}; db.session.commit()
         return jsonify(row.data)
+    
+    @app.get("/api/admin/students")
+    @jwt_required()
+    def admin_students():
+        admin_id = int(get_jwt_identity())
+        admin = db.session.get(User, admin_id)
+
+        # Faqat admin kirishi mumkin
+        if not admin or admin.first != "admin" or admin.last != "admin":
+            return jsonify(message="Ruxsat yo‘q"), 403
+
+        users = User.query.filter(
+            User.id != admin_id
+        ).order_by(User.id.asc()).all()
+
+        all_progress = Progress.query.all()
+
+        progress_by_user = {}
+
+        for row in all_progress:
+            progress_by_user.setdefault(row.user_id, {})
+            progress_by_user[row.user_id][row.topic] = row.data or {}
+
+        students = []
+
+        for u in users:
+            students.append({
+                "id": u.id,
+                "firstName": u.first,
+                "lastName": u.last,
+                "progress": progress_by_user.get(u.id, {})
+            })
+
+        return jsonify({"students": students})
+
     return app
 
 app=create_app()
