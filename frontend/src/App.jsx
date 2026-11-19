@@ -64,6 +64,15 @@ export default function App() {
     const [ci, setCi] = useState(0);
     const [ca, setCa] = useState([]);
     const [cr, setCr] = useState(null);
+    // Mini Game
+    const [gameQuestion, setGameQuestion] = useState(null);
+    const [gameScore, setGameScore] = useState(0);
+    const [gameLives, setGameLives] = useState(3);
+    const [gameChosen, setGameChosen] = useState(null);
+    const [gameOver, setGameOver] = useState(false);
+    const [miniBest, setMiniBest] = useState(
+        () => Number(localStorage.getItem('dono-mini-best') || 0)
+    );
 
     const token = localStorage.getItem('dono-token');
 
@@ -291,6 +300,65 @@ export default function App() {
         setPage('controltest');
     }
 
+
+    function getRandomMiniQuestion() {
+        const pool = topics.flatMap(item =>
+            ['easy', 'medium', 'hard'].flatMap(level =>
+                (questions[item.id]?.[level] || [])
+            )
+        );
+
+        const available = pool.filter(
+            q => q[0] !== gameQuestion?.[0]
+        );
+
+        const source = available.length ? available : pool;
+
+        return source[Math.floor(Math.random() * source.length)];
+    }
+
+    function startMiniGame() {
+        setGameScore(0);
+        setGameLives(3);
+        setGameChosen(null);
+        setGameOver(false);
+        setGameQuestion(getRandomMiniQuestion());
+        setPage('minigame');
+    }
+
+    function answerMiniGame(optionIndex) {
+        if (gameChosen !== null || !gameQuestion || gameOver) return;
+
+        setGameChosen(optionIndex);
+
+        const correct = optionIndex === gameQuestion[2];
+
+        if (correct) {
+            setGameScore(old => {
+                const updated = old + 10;
+
+                if (updated > Number(localStorage.getItem('dono-mini-best') || 0)) {
+                    localStorage.setItem('dono-mini-best', String(updated));
+                    setMiniBest(updated);
+                }
+
+                return updated;
+            });
+        } else {
+            setGameLives(old => old - 1);
+        }
+
+        setTimeout(() => {
+            if (!correct && gameLives === 1) {
+                setGameOver(true);
+                return;
+            }
+
+            setGameQuestion(getRandomMiniQuestion());
+            setGameChosen(null);
+        }, 800);
+    }
+
     function controlAnswer(optionIndex) {
         if (ca[ci] !== undefined || !ct[ci]) return;
 
@@ -494,6 +562,27 @@ export default function App() {
                                 <span className="art-star star-one">✦</span>
                                 <span className="art-star star-two">✧</span>
                                 <span className="art-star star-three">✦</span>
+                            </div>
+                        </section>
+
+                        <section className="mini-game-banner">
+                            <div className="mini-game-info">
+                                <span className="mini-game-tag">DAM OLISH VAQTI 🎮</span>
+                                <h2>Mini Game</h2>
+                                <p>
+                                    Zerikdingmi? Matematik bilimingni sinab ko‘r!
+                                    To‘g‘ri javob ber, ball yig‘ va rekordingni yangila.
+                                </p>
+
+                                <button className="mini-game-button" onClick={startMiniGame}>
+                                    O‘yinni boshlash →
+                                </button>
+                            </div>
+
+                            <div className="mini-game-art">
+                                <span>🧠</span>
+                                <span>➕</span>
+                                <span>🏆</span>
                             </div>
                         </section>
 
@@ -1037,6 +1126,105 @@ export default function App() {
                                 </div>
                             </div>
                         )}
+                    </section>
+                )}
+
+                {page === 'minigame' && (
+                    <section className="mini-game-page">
+                        <button
+                            className="back-button"
+                            onClick={() => setPage('home')}
+                        >
+                            ← Bosh sahifa
+                        </button>
+
+                        <div className="mini-game-panel">
+                            <div className="mini-game-header">
+                                <div>
+                                    <span className="mini-game-tag">DONO EDU ARCADE</span>
+                                    <h1>Mini Game 🎮</h1>
+                                </div>
+
+                                <div className="mini-game-best">
+                                    <span>🏆 Rekord</span>
+                                    <strong>{miniBest}</strong>
+                                </div>
+                            </div>
+
+                            <div className="mini-game-stats">
+                                <div>
+                                    <span>Ball</span>
+                                    <strong>{gameScore}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Imkoniyat</span>
+                                    <strong>{'❤️'.repeat(gameLives)}{'🖤'.repeat(3 - gameLives)}</strong>
+                                </div>
+                            </div>
+
+                            {!gameOver ? (
+                                <>
+                                    <div className="mini-game-question">
+                                        <span>SAVOL</span>
+                                        <h2>{gameQuestion?.[0]}</h2>
+                                    </div>
+
+                                    <div className="mini-game-answers">
+                                        {gameQuestion?.[1].map((option, index) => {
+                                            let className = 'mini-game-answer';
+
+                                            if (gameChosen !== null && index === gameQuestion[2]) {
+                                                className += ' correct';
+                                            } else if (
+                                                gameChosen === index &&
+                                                index !== gameQuestion[2]
+                                            ) {
+                                                className += ' incorrect';
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={index}
+                                                    className={className}
+                                                    disabled={gameChosen !== null}
+                                                    onClick={() => answerMiniGame(index)}
+                                                >
+                                                    {String.fromCharCode(65 + index)}. {option}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {gameChosen !== null && (
+                                        <p className="mini-game-feedback">
+                                            {gameChosen === gameQuestion[2]
+                                                ? 'To‘g‘ri javob! +10 ball 🎉'
+                                                : 'Noto‘g‘ri javob! 😅'}
+                                        </p>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="mini-game-over">
+                                    <div>💔</div>
+                                    <h2>Game Over!</h2>
+                                    <p>Yaxshi harakat qilding!</p>
+
+                                    <div className="mini-game-final-score">
+                                        {gameScore} ball
+                                    </div>
+
+                                    <p>Eng yaxshi natija: {miniBest}</p>
+
+                                    <button
+                                        className="mini-game-button"
+                                        onClick={startMiniGame}
+                                    >
+                                        🔄 Qayta o‘ynash
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </section>
                 )}
             </main>

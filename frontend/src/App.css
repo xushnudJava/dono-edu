@@ -562,3 +562,248 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   .navbar, .back-button, button, .nav-button, .hero-button, footer { display: none !important; }
   .lesson-page, .result-panel, .test-panel { box-shadow: none !important; border: 0 !important; }
 }
+
+
+/* MINI GAME BANNER */
+.mini-game-banner {
+    margin: 35px auto;
+    padding: 28px 35px;
+    max-width: 1150px;
+    border-radius: 24px;
+    background: linear-gradient(120deg, #24245e, #6555c9);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+}
+
+.mini-game-info {
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+}
+
+.mini-game-tag {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: #ffd66b;
+}
+
+.mini-game-banner h2 {
+    font-size: 30px;
+    margin: 10px 0;
+}
+
+.mini-game-banner p {
+    line-height: 1.6;
+    opacity: .9;
+}
+
+.mini-game-button {
+    border: none;
+    border-radius: 12px;
+    padding: 13px 22px;
+    background: #ffd66b;
+    color: #29234f;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.mini-game-button:hover {
+    transform: translateY(-3px);
+    background: #ffe49b;
+}
+
+.mini-game-art {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 48px;
+}
+
+.mini-game-art span:nth-child(2) {
+    font-size: 65px;
+    transform: rotate(-12deg);
+}
+
+/* MINI GAME PAGE */
+.mini-game-page {
+    max-width: 850px;
+    margin: 35px auto;
+    padding: 0 18px;
+}
+
+.mini-game-panel {
+    margin-top: 20px;
+    padding: 30px;
+    border-radius: 24px;
+    background: white;
+    box-shadow: 0 12px 40px rgba(30, 30, 80, .09);
+}
+
+.mini-game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.mini-game-header h1 {
+    margin: 8px 0;
+    font-size: 30px;
+}
+
+.mini-game-best {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 20px;
+    border-radius: 15px;
+    background: #fff6df;
+    color: #8a6515;
+}
+
+.mini-game-best strong {
+    font-size: 25px;
+}
+
+.mini-game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 25px 0;
+    padding: 18px;
+    border-radius: 16px;
+    background: #f5f5ff;
+}
+
+.mini-game-stats div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mini-game-stats span {
+    color: #777;
+    font-size: 13px;
+}
+
+.mini-game-stats strong {
+    font-size: 22px;
+}
+
+.mini-game-question {
+    text-align: center;
+    padding: 30px 15px;
+    border-radius: 18px;
+    background: #f4f3ff;
+}
+
+.mini-game-question span {
+    font-size: 12px;
+    font-weight: 800;
+    color: #7464cb;
+    letter-spacing: 2px;
+}
+
+.mini-game-question h2 {
+    font-size: 30px;
+    margin: 15px 0 0;
+}
+
+.mini-game-answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+    margin-top: 22px;
+}
+
+.mini-game-answer {
+    padding: 17px;
+    border: 2px solid #e8e8f2;
+    border-radius: 13px;
+    background: white;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.mini-game-answer:hover:not(:disabled) {
+    border-color: #8170db;
+    background: #f7f5ff;
+}
+
+.mini-game-answer:disabled {
+    cursor: default;
+}
+
+.mini-game-answer.correct {
+    background: #e5f8ed;
+    border-color: #36b875;
+    color: #16834b;
+}
+
+.mini-game-answer.incorrect {
+    background: #fff0f0;
+    border-color: #e36a6a;
+    color: #c33;
+}
+
+.mini-game-feedback {
+    text-align: center;
+    font-weight: 700;
+    margin-top: 20px;
+}
+
+.mini-game-over {
+    text-align: center;
+    padding: 35px 10px;
+}
+
+.mini-game-over > div:first-child {
+    font-size: 55px;
+}
+
+.mini-game-over h2 {
+    font-size: 32px;
+    margin: 10px 0;
+}
+
+.mini-game-final-score {
+    font-size: 42px;
+    font-weight: 900;
+    color: #6b5acb;
+    margin: 20px 0;
+}
+
+@media (max-width: 600px) {
+    .mini-game-banner {
+        padding: 23px;
+    }
+
+    .mini-game-art {
+        display: none;
+    }
+
+    .mini-game-panel {
+        padding: 20px;
+    }
+
+    .mini-game-answers {
+        grid-template-columns: 1fr;
+    }
+
+    .mini-game-question h2 {
+        font-size: 24px;
+    }
+
+    .mini-game-header h1 {
+        font-size: 24px;
+    }
+}
